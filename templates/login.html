@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login/Register - Parkinson's Disease Detection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            width: 900px;
+            max-width: 100%;
+            min-height: 500px;
+            display: flex;
+        }
+
+        .login-image {
+            flex: 1;
+            background: url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center/cover;
+            position: relative;
+        }
+
+        .login-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(26, 42, 108, 0.7), rgba(178, 31, 31, 0.7));
+        }
+
+        .form-container {
+            flex: 1;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .form-header h1 {
+            color: #1a2a6c;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .form-header p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #1a2a6c;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(26, 42, 108, 0.1);
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #1a2a6c, #b21f1f);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(26, 42, 108, 0.3);
+        }
+
+        .toggle-form {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .toggle-form a {
+            color: #1a2a6c;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .toggle-form a:hover {
+            color: #b21f1f;
+        }
+
+        .error-message {
+            background: #ffe5e5;
+            color: #d63031;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px solid #ff7675;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px solid #c3e6cb;
+        }
+
+        .password-requirements {
+            background: #f8f9fa;
+            border: 2px solid #1a2a6c;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            font-size: 0.85rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        .password-requirements h4 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .requirement {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+            color: #666;
+        }
+
+        .requirement.valid {
+            color: #28a745;
+        }
+
+        .requirement.invalid {
+            color: #dc3545;
+        }
+
+        .requirement-icon {
+            margin-right: 8px;
+            font-weight: bold;
+        }
+
+        .password-strength {
+            margin-top: 10px;
+            height: 4px;
+            background: #e9ecef;
+            border-radius: 2px;
+            overflow: hidden;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .strength-weak { background: #dc3545; width: 25%; }
+        .strength-fair { background: #ffc107; width: 50%; }
+        .strength-good { background: #17a2b8; width: 75%; }
+        .strength-strong { background: #28a745; width: 100%; }
+
+        .strength-text {
+            font-size: 0.8rem;
+            margin-top: 5px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .strength-weak-text { color: #dc3545; }
+        .strength-fair-text { color: #ffc107; }
+        .strength-good-text { color: #17a2b8; }
+        .strength-strong-text { color: #28a745; }
+
+        .form {
+            display: none;
+        }
+
+        .form.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                width: 95%;
+            }
+
+            .login-image {
+                display: none;
+            }
+
+            .form-container {
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="login-image"></div>
+        <div class="form-container">
+            <!-- Login Form -->
+            <div id="loginForm" class="form active">
+                <div class="form-header">
+                    <h1>Welcome </h1>
+                    <h5>We are here to help you!!<h5>
+                    
+                    <p>Please login to access the Parkinson's Disease Detection System</p>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="{{ category }}-message">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <form method="POST" action="{{ url_for('login') }}">
+                    <div class="form-group">
+                        <label for="login-username">Username</label>
+                        <input type="text" id="login-username" name="username" required placeholder="Enter your username">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" name="password" required placeholder="Enter your password">
+                    </div>
+
+                    <button type="submit" class="submit-button">Login</button>
+
+                    <div class="toggle-form">
+                        <a onclick="toggleForms()">Don't have an account? Register here</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Registration Form -->
+            <div id="registerForm" class="form">
+                <div class="form-header">
+                    <h1>Create Account</h1>
+                    <p>Join our Parkinson's Disease Detection System</p>
+                </div>
+
+               <form method="POST" action="{{ url_for('register') }}">
+    <div class="form-group">
+        <label for="register-username">Username</label>
+        <input type="text" id="register-username" name="username" 
+               required 
+               placeholder="Choose a username"
+               pattern="^[A-Za-z][A-Za-z]*$"
+               title="Username must start with a letter  and contain only letters.">
+    </div>
+
+    <div class="form-group">
+        <label for="register-email">Email</label>
+       <input type="email" id="register-email" name="email" 
+       required 
+       placeholder="Enter your Gmail address"
+        pattern="^[a-zA-Z0-9](\.?[a-zA-Z0-9_-]){2,}@gmail\.com$"
+       title="Enter a valid Gmail address (e.g., example@gmail.com)">
+        <div id="emailError" style="color:#d63031; font-size:0.9rem; margin-top:5px;"></div>
+
+
+    </div>
+
+    <div class="form-group">
+        <label for="register-password">Password</label>
+        <input type="password" id="register-password" name="password" 
+               required 
+               placeholder="Create a password" 
+               onkeyup="validatePassword()">
+
+        <div class="password-requirements" id="passwordRequirements" 
+             style="display: block !important; visibility: visible !important; opacity: 1 !important;">
+            <h4 style="color: #1a2a6c; font-weight: 600; margin-bottom: 10px;">🔒 Password Requirements:</h4>
+            <div class="requirement" id="req-length">
+                <span class="requirement-icon">✗</span>
+                <span>At least 8 characters long</span>
+            </div>
+            <div class="requirement" id="req-uppercase">
+                <span class="requirement-icon">✗</span>
+                <span>At least one uppercase letter (A-Z)</span>
+            </div>
+            <div class="requirement" id="req-lowercase">
+                <span class="requirement-icon">✗</span>
+                <span>At least one lowercase letter (a-z)</span>
+            </div>
+            <div class="requirement" id="req-digit">
+                <span class="requirement-icon">✗</span>
+                <span>At least one digit (0-9)</span>
+            </div>
+            <div class="requirement" id="req-special">
+                <span class="requirement-icon">✗</span>
+                <span>At least one special character (!@#$%^&*()_+-=[]{}|;:,.<>?)</span>
+            </div>
+        </div>
+
+        <div class="password-strength" id="passwordStrength" 
+             style="display: block !important; visibility: visible !important; opacity: 1 !important;">
+            <div class="password-strength-bar" id="strengthBar" 
+                 style="width: 0%; background: #e9ecef;"></div>
+            <div class="strength-text" id="strengthText" 
+                 style="color: #666; font-size: 0.8rem; margin-top: 5px;">Password Strength: Enter a password</div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="register-confirm-password">Confirm Password</label>
+        <input type="password" id="register-confirm-password" name="confirm_password" 
+               required 
+               placeholder="Confirm your password">
+    </div>
+
+    <button type="submit" class="submit-button">Register</button>
+
+    <div class="toggle-form">
+        <a onclick="toggleForms()">Already have an account? Login here</a>
+    </div>
+</form>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleForms() {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            
+            if (loginForm.classList.contains('active')) {
+                loginForm.classList.remove('active');
+                registerForm.classList.add('active');
+            } else {
+                registerForm.classList.remove('active');
+                loginForm.classList.add('active');
+            }
+        }
+
+        function validatePassword() {
+            const password = document.getElementById('register-password').value;
+            const strengthBar = document.getElementById('strengthBar');
+            const strengthText = document.getElementById('strengthText');
+            
+            // If password is empty, show default state
+            if (password.length === 0) {
+                strengthBar.className = 'password-strength-bar';
+                strengthBar.style.width = '0%';
+                strengthBar.style.background = '#e9ecef';
+                strengthText.className = 'strength-text';
+                strengthText.textContent = 'Password Strength: Enter a password';
+                return;
+            }
+            
+            // Check each requirement
+            const checks = {
+                length: password.length >= 8,
+                uppercase: /[A-Z]/.test(password),
+                lowercase: /[a-z]/.test(password),
+                digit: /[0-9]/.test(password),
+                special: /[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(password)
+            };
+            
+            // Update requirement indicators
+            updateRequirement('req-length', checks.length);
+            updateRequirement('req-uppercase', checks.uppercase);
+            updateRequirement('req-lowercase', checks.lowercase);
+            updateRequirement('req-digit', checks.digit);
+            updateRequirement('req-special', checks.special);
+            
+            // Calculate password strength
+            const validChecks = Object.values(checks).filter(Boolean).length;
+            let strengthLevel = 'weak';
+            let strengthClass = 'strength-weak';
+            let strengthTextClass = 'strength-weak-text';
+            let strengthLabel = 'Weak';
+            
+            if (validChecks >= 5) {
+                strengthLevel = 'strong';
+                strengthClass = 'strength-strong';
+                strengthTextClass = 'strength-strong-text';
+                strengthLabel = 'Strong';
+            } else if (validChecks >= 4) {
+                strengthLevel = 'good';
+                strengthClass = 'strength-good';
+                strengthTextClass = 'strength-good-text';
+                strengthLabel = 'Good';
+            } else if (validChecks >= 3) {
+                strengthLevel = 'fair';
+                strengthClass = 'strength-fair';
+                strengthTextClass = 'strength-fair-text';
+                strengthLabel = 'Fair';
+            }
+            
+            // Update strength indicator
+            strengthBar.className = `password-strength-bar ${strengthClass}`;
+            strengthText.className = `strength-text ${strengthTextClass}`;
+            strengthText.textContent = `Password Strength: ${strengthLabel}`;
+        }
+        
+        function updateRequirement(elementId, isValid) {
+            const element = document.getElementById(elementId);
+            const icon = element.querySelector('.requirement-icon');
+            
+            if (isValid) {
+                element.className = 'requirement valid';
+                icon.textContent = '✓';
+            } else {
+                element.className = 'requirement invalid';
+                icon.textContent = '✗';
+            }
+        }
+        
+        // Add confirm password validation
+        document.getElementById('register-confirm-password').addEventListener('keyup', function() {
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = this.value;
+            
+            if (confirmPassword.length > 0) {
+                if (password === confirmPassword) {
+                    this.style.borderColor = '#28a745';
+                } else {
+                    this.style.borderColor = '#dc3545';
+                }
+            } else {
+                this.style.borderColor = '#e1e1e1';
+            }
+        }
+        );
+        document.querySelector("form[action='{{ url_for('register') }}']").addEventListener("submit", function(e) {
+    const email = document.getElementById("register-email").value.trim();
+    const error = document.getElementById("emailError");
+    // Updated strict Gmail validation pattern
+    const gmailPattern = /^[a-zA-Z0-9](\.?[a-zA-Z0-9_-]){2,}@gmail\.com$/;
+
+    if (!gmailPattern.test(email)) {
+        e.preventDefault();
+        error.textContent = "❌ Please enter a valid Gmail address (minimum 3 characters before @gmail.com, no symbols like '..' or '-')";  
+    } else {
+        error.textContent = "";
+    }
+});
+
+
+    </script>
+</body>
+</html> 

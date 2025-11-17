@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Parkinson Disease Detection</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="/">Parkinson Disease Detection</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav">
+                    <a class="nav-item nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+                    <a class="nav-item nav-link" href="/about">About</a>
+                </div>
+            </div>
+        </nav>
+        <div class="container">
+            <div class="row mt-5">
+                <div class="text-center custom-center">
+                    <a href="/">
+                        <img class="img-fluid w-50" alt="Parkinson Logo" src="{{ url_for('static', filename='img/logo.png') }}" />
+                    </a>
+                </div>                
+                <h4 class="text-center font-italic w-100 mt-5">Hand-drawn spiral prediction for Parkinson's disease.</h4>
+            </div>
+            <div class="row mt-4">
+                {% if result[0] == 0 %}
+                    {% set confidence = (1 - probability[1]) * 100 %}
+                    <p class="text-center w-100"><span class="font-weight-bold">The prediction came back negative.</span> It is unlikely that you have Parkinson's.</p>
+                    <div class="text-center w-100 mt-3">
+                        <div class="alert alert-success" role="alert">
+                            <h5><i class="fas fa-check-circle"></i> Confidence Level: {{ "%.1f"|format(confidence) }}%</h5>
+                            {% if confidence >= 80 %}
+                                <p class="mb-0"><strong>High Confidence:</strong> Very low risk of Parkinson's disease.</p>
+                            {% elif confidence >= 60 %}
+                                <p class="mb-0"><strong>Moderate Confidence:</strong> Low risk of Parkinson's disease.</p>
+                            {% else %}
+                                <p class="mb-0"><strong>Low Confidence:</strong> Results are uncertain. Consider consulting a medical professional.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% else %}
+                    {% set confidence = probability[1] * 100 %}
+                    <p class="text-center w-100"><span class="font-weight-bold">The prediction came back positive.</span> The drawing was similar to other patients that have Parkinson's disease.</p>
+                    <div class="text-center w-100 mt-3">
+                        {% if confidence >= 80 %}
+                            <div class="alert alert-danger" role="alert">
+                                <h5><i class="fas fa-exclamation-triangle"></i> High Risk Warning!</h5>
+                                <p class="mb-0"><strong>Confidence Level: {{ "%.1f"|format(confidence) }}%</strong></p>
+                                <p class="mb-0"><strong>⚠️ URGENT:</strong> High probability detected. Please consult a medical professional immediately.</p>
+                            </div>
+                        {% elif confidence >= 60 %}
+                            <div class="alert alert-warning" role="alert">
+                                <h5><i class="fas fa-exclamation-circle"></i> Moderate Risk Warning</h5>
+                                <p class="mb-0"><strong>Confidence Level: {{ "%.1f"|format(confidence) }}%</strong></p>
+                                <p class="mb-0"><strong>⚠️ CAUTION:</strong> Moderate probability detected. Consider consulting a medical professional.</p>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info" role="alert">
+                                <h5><i class="fas fa-info-circle"></i> Low Confidence Result</h5>
+                                <p class="mb-0"><strong>Confidence Level: {{ "%.1f"|format(confidence) }}%</strong></p>
+                                <p class="mb-0"><strong>ℹ️ NOTE:</strong> Results are uncertain. Consider consulting a medical professional for a proper evaluation.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+                <div class="text-center w-100 mt-3">
+                    <div class="alert alert-secondary" role="alert">
+                        <p class="mb-0"><strong>Medical Disclaimer:</strong> Please note that this is not a diagnosis. If you have any questions or concerns, please consult a medical professional.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-1">
+                <h2 class="text-center w-100">Your Drawing:</h2>
+                <div class="text-center w-100">
+                    <img class="img-fluid w-25" alt="Your Drawing" src="{{image_path}}" />
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

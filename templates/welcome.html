@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome | Parkinson's Detection</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1 class="welcome-text">👋 Welcome to Parkinson’s Disease Detection Portal <span class="heartbeat">❤️</span></h1>
+    <p class="subtitle">“We aim to bring technology and healthcare together, making early detection, care, and support easier and more reliable for everyone.”</p>
+
+    <p style="font-size: 1rem; color: #03396c; margin-bottom: 30px;">
+      This system helps analyze <strong>voice patterns</strong>, <strong>spiral drawings</strong> 
+      to assist in early Parkinson’s detection. Please login or register to continue your analysis journey.
+    </p>
+
+    <a href="{{ url_for('login') }}"><button>Login</button></a>
+    <a href="{{ url_for('register') }}"><button>Register</button></a>
+  </div>
+
+  <div class="footer">🧬 Parkinson’s Disease Detection System | © 2025 Developed by Students of GEC Mosalehosalli</div>
+
+</body>
+</html>

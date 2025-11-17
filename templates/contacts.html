@@ -1,0 +1,566 @@
+{% extends "base.html" %}
+
+{% block title %}Medical Contacts & Emergency Information{% endblock %}
+
+{% block extra_css %}
+<style>
+    .contacts-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .section {
+        background: white;
+        border-radius: 10px;
+        padding: 25px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .section h2 {
+        color: #1a2a6c;
+        margin-bottom: 20px;
+        font-size: 1.8rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .section h2 i {
+        color: #b21f1f;
+    }
+
+    .contact-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin: 20px 0;
+    }
+
+    .contact-card {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        border-left: 4px solid #1a2a6c;
+        transition: transform 0.3s ease;
+    }
+
+    .contact-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .contact-card h3 {
+        color: #1a2a6c;
+        margin-bottom: 15px;
+        font-size: 1.3rem;
+    }
+
+    .contact-info {
+        margin-bottom: 15px;
+    }
+
+    .contact-info p {
+        color: #666;
+        margin: 5px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .contact-info i {
+        color: #b21f1f;
+        width: 20px;
+    }
+
+    .emergency-contact {
+        background: #fff3f3;
+        border-left-color: #dc3545;
+    }
+
+    .emergency-contact h3 {
+        color: #dc3545;
+    }
+
+    .emergency-contact .contact-info i {
+        color: #dc3545;
+    }
+
+    .map-container {
+        margin-top: 20px;
+        border-radius: 8px;
+        overflow: hidden;
+        height: 300px;
+    }
+
+    .map-container iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    .add-contact-btn {
+        display: inline-block;
+        background: #1a2a6c;
+        color: white;
+        padding: 12px 25px;
+        border-radius: 5px;
+        text-decoration: none;
+        margin-top: 20px;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+    }
+
+    .add-contact-btn:hover {
+        background: #b21f1f;
+        transform: translateY(-2px);
+    }
+
+    .contact-form {
+        display: none;
+        margin-top: 20px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .contact-form.active {
+        display: block;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        color: #1a2a6c;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 0.9rem;
+    }
+
+    .form-group textarea {
+        height: 100px;
+        resize: vertical;
+    }
+
+    .appointment-section {
+        background: #f8f9fa;
+        padding: 25px;
+        border-radius: 10px;
+        margin-top: 20px;
+    }
+
+    .appointment-form {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 15px;
+    }
+
+    .form-group {
+        flex: 1;
+    }
+
+    .appointment-card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-top: 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .appointment-card h4 {
+        color: #1a2a6c;
+        margin-bottom: 15px;
+    }
+
+    .appointment-card p {
+        margin: 5px 0;
+        color: #666;
+    }
+
+    .appointment-card .status {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 0.9em;
+        margin-top: 10px;
+    }
+
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-confirmed {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-cancelled {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .time-slots {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .time-slot {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .time-slot:hover {
+        background: #1a2a6c;
+        color: white;
+        border-color: #1a2a6c;
+    }
+
+    .time-slot.selected {
+        background: #1a2a6c;
+        color: white;
+        border-color: #1a2a6c;
+    }
+
+    .time-slot.unavailable {
+        background: #f8f9fa;
+        color: #999;
+        cursor: not-allowed;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="contacts-container">
+    <div class="section">
+        <h2><i class="fas fa-hospital"></i> Parkinson's Disease Specialists in India</h2>
+        <div class="contact-grid">
+            <div class="contact-card">
+                <h3>Dr. Ravi Shankar</h3>
+                <div class="contact-info">
+                    <p><i class="fas fa-user-md"></i> Neurologist</p>
+                    <p><i class="fas fa-phone"></i> +91 80 2222 1111</p>
+                    <p><i class="fas fa-envelope"></i> dr.ravi@nimhans.ac.in</p>
+                    <p><i class="fas fa-map-marker-alt"></i> NIMHANS, Hosur Road, Bangalore - 560029</p>
+                    <p><i class="fas fa-clock"></i> Mon-Fri: 9:00 AM - 5:00 PM</p>
+                </div>
+            </div>
+            <div class="contact-card">
+                <h3>Dr. Pramod Kumar Pal</h3>
+                <div class="contact-info">
+                    <p><i class="fas fa-user-md"></i> Movement Disorder Specialist</p>
+                    <p><i class="fas fa-phone"></i> +91 80 2656 5252</p>
+                    <p><i class="fas fa-envelope"></i> dr.pal@nimhans.ac.in</p>
+                    <p><i class="fas fa-map-marker-alt"></i> NIMHANS, Hosur Road, Bangalore - 560029</p>
+                    <p><i class="fas fa-clock"></i> Mon-Fri: 8:00 AM - 4:00 PM</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2><i class="fas fa-clinic-medical"></i> Specialized Clinics in India</h2>
+        <div class="contact-grid">
+            <div class="contact-card">
+                <h3>Parkinson's Disease and Movement Disorders Clinic</h3>
+                <div class="contact-info">
+                    <p><i class="fas fa-phone"></i> +91 22 2493 7733</p>
+                    <p><i class="fas fa-envelope"></i> info@parkinsonsindia.org</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Jaslok Hospital, 15, Dr. G. Deshmukh Marg, Mumbai - 400026</p>
+                    <p><i class="fas fa-clock"></i> Mon-Sat: 8:00 AM - 6:00 PM</p>
+                    <p><i class="fas fa-info-circle"></i> Comprehensive PD care and research center</p>
+                </div>
+            </div>
+            <div class="contact-card">
+                <h3>Movement Disorders Center</h3>
+                <div class="contact-info">
+                    <p><i class="fas fa-phone"></i> +91 44 2829 0200</p>
+                    <p><i class="fas fa-envelope"></i> contact@apollohospitals.com</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Apollo Hospitals, Greams Road, Chennai - 600006</p>
+                    <p><i class="fas fa-clock"></i> Mon-Fri: 7:00 AM - 7:00 PM</p>
+                    <p><i class="fas fa-info-circle"></i> Advanced treatment and rehabilitation center</p>
+                </div>
+            </div>
+            <div class="contact-card">
+                <h3>All India Institute of Medical Sciences (AIIMS)</h3>
+                <div class="contact-info">
+                    <p><i class="fas fa-phone"></i> +91 11 2658 8500</p>
+                    <p><i class="fas fa-envelope"></i> info@aiims.edu</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Sri Aurobindo Marg, Ansari Nagar, New Delhi - 110029</p>
+                    <p><i class="fas fa-clock"></i> Mon-Sat: 8:00 AM - 8:00 PM</p>
+                    <p><i class="fas fa-info-circle"></i> Government hospital with specialized neurology department</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2><i class="fas fa-ambulance"></i> Emergency Contacts</h2>
+        <div class="contact-grid">
+            <div class="contact-card emergency-contact">
+                <h3>Emergency Services</h3>
+                <div class="contact-info">
+                    <p><i class="fas fa-phone"></i> 108</p>
+                    <p><i class="fas fa-info-circle"></i> National Emergency Number</p>
+                </div>
+            </div>
+            <div class="contact-card emergency-contact">
+                <h3>Parkinson's Disease Helpline</h3>
+                <div class="contact-info">
+                    <p><i class="fas fa-phone"></i> 1800-22-7636</p>
+                    <p><i class="fas fa-info-circle"></i> Parkinson's Disease Foundation of India</p>
+                </div>
+            </div>
+            <div class="contact-card emergency-contact">
+                <h3>Ambulance Services</h3>
+                <div class="contact-info">
+                    <p><i class="fas fa-phone"></i> 102</p>
+                    <p><i class="fas fa-info-circle"></i> National Ambulance Service</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2><i class="fas fa-users"></i> Personal Emergency Contacts</h2>
+        <button class="add-contact-btn" onclick="toggleContactForm()">
+            <i class="fas fa-plus"></i> Add Emergency Contact
+        </button>
+        
+        <div class="contact-form" id="contactForm">
+            <form onsubmit="addContact(event)">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="relationship">Relationship</label>
+                    <input type="text" id="relationship" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="notes">Additional Notes</label>
+                    <textarea id="notes"></textarea>
+                </div>
+                <button type="submit" class="add-contact-btn">Save Contact</button>
+            </form>
+        </div>
+
+        <div class="contact-grid" id="personalContacts">
+            <!-- Personal contacts will be added here dynamically -->
+        </div>
+    </div>
+
+    <div class="section">
+        <h2><i class="fas fa-map-marked-alt"></i> Major Medical Facilities in India</h2>
+        <div class="map-container">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.0130933545167!2d77.5945627!3d12.9715987!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae1670c9b44e6d%3A0xf8dfc3e8517e4fe0!2sNational%20Institute%20of%20Mental%20Health%20and%20Neurosciences!5e0!3m2!1sen!2sin!4v1645564750981!5m2!1sen!2sin" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2><i class="fas fa-calendar-check"></i> Book an Appointment</h2>
+        <div class="appointment-section">
+            <form class="appointment-form" id="appointmentForm" onsubmit="bookAppointment(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="doctor">Select Doctor/Clinic</label>
+                        <select id="doctor" required>
+                            <option value="">Choose a doctor or clinic</option>
+                            <option value="dr_ravi">Dr. Ravi Shankar - NIMHANS</option>
+                            <option value="dr_pal">Dr. Pramod Kumar Pal - NIMHANS</option>
+                            <option value="jaslok">Parkinson's Disease Clinic - Jaslok Hospital</option>
+                            <option value="apollo">Movement Disorders Center - Apollo Hospitals</option>
+                            <option value="aiims">AIIMS Neurology Department</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="appointmentType">Appointment Type</label>
+                        <select id="appointmentType" required>
+                            <option value="">Select type</option>
+                            <option value="new">New Patient Consultation</option>
+                            <option value="followup">Follow-up Visit</option>
+                            <option value="emergency">Emergency Consultation</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="appointmentDate">Preferred Date</label>
+                        <input type="date" id="appointmentDate" required min="{{ today_date }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Available Time Slots</label>
+                        <div class="time-slots">
+                            <div class="time-slot" onclick="selectTimeSlot(this)">09:00 AM</div>
+                            <div class="time-slot" onclick="selectTimeSlot(this)">10:00 AM</div>
+                            <div class="time-slot" onclick="selectTimeSlot(this)">11:00 AM</div>
+                            <div class="time-slot" onclick="selectTimeSlot(this)">02:00 PM</div>
+                            <div class="time-slot" onclick="selectTimeSlot(this)">03:00 PM</div>
+                            <div class="time-slot" onclick="selectTimeSlot(this)">04:00 PM</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="patientName">Full Name</label>
+                        <input type="text" id="patientName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="patientPhone">Phone Number</label>
+                        <input type="tel" id="patientPhone" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="patientEmail">Email Address</label>
+                    <input type="email" id="patientEmail" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="symptoms">Brief Description of Symptoms</label>
+                    <textarea id="symptoms" rows="3"></textarea>
+                </div>
+
+                <button type="submit" class="add-contact-btn">
+                    <i class="fas fa-calendar-plus"></i> Book Appointment
+                </button>
+            </form>
+
+            <div id="appointmentConfirmation" style="display: none;">
+                <div class="appointment-card">
+                    <h4>Appointment Confirmed</h4>
+                    <p><strong>Doctor/Clinic:</strong> <span id="confirmDoctor"></span></p>
+                    <p><strong>Date:</strong> <span id="confirmDate"></span></p>
+                    <p><strong>Time:</strong> <span id="confirmTime"></span></p>
+                    <p><strong>Appointment ID:</strong> <span id="confirmId"></span></p>
+                    <p class="status status-confirmed">Confirmed</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2><i class="fas fa-history"></i> Your Appointments</h2>
+        <div id="appointmentsList">
+            <!-- Appointments will be added here dynamically -->
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleContactForm() {
+    const form = document.getElementById('contactForm');
+    form.classList.toggle('active');
+}
+
+function addContact(event) {
+    event.preventDefault();
+    
+    const name = document.getElementById('name').value;
+    const relationship = document.getElementById('relationship').value;
+    const phone = document.getElementById('phone').value;
+    const notes = document.getElementById('notes').value;
+
+    const contactCard = document.createElement('div');
+    contactCard.className = 'contact-card emergency-contact';
+    contactCard.innerHTML = `
+        <h3>${name}</h3>
+        <div class="contact-info">
+            <p><i class="fas fa-user"></i> ${relationship}</p>
+            <p><i class="fas fa-phone"></i> ${phone}</p>
+            ${notes ? `<p><i class="fas fa-info-circle"></i> ${notes}</p>` : ''}
+        </div>
+    `;
+
+    document.getElementById('personalContacts').appendChild(contactCard);
+    document.getElementById('contactForm').classList.remove('active');
+    event.target.reset();
+}
+
+function selectTimeSlot(element) {
+    // Remove selected class from all time slots
+    document.querySelectorAll('.time-slot').forEach(slot => {
+        slot.classList.remove('selected');
+    });
+    // Add selected class to clicked time slot
+    element.classList.add('selected');
+}
+
+function bookAppointment(event) {
+    event.preventDefault();
+    
+    const doctor = document.getElementById('doctor').value;
+    const appointmentType = document.getElementById('appointmentType').value;
+    const date = document.getElementById('appointmentDate').value;
+    const selectedTimeSlot = document.querySelector('.time-slot.selected');
+    
+    if (!selectedTimeSlot) {
+        alert('Please select a time slot');
+        return;
+    }
+
+    const time = selectedTimeSlot.textContent;
+    const patientName = document.getElementById('patientName').value;
+    const patientPhone = document.getElementById('patientPhone').value;
+    const patientEmail = document.getElementById('patientEmail').value;
+    const symptoms = document.getElementById('symptoms').value;
+
+    // Generate a random appointment ID
+    const appointmentId = 'APT' + Math.random().toString(36).substr(2, 9).toUpperCase();
+
+    // Show confirmation
+    document.getElementById('confirmDoctor').textContent = document.getElementById('doctor').options[document.getElementById('doctor').selectedIndex].text;
+    document.getElementById('confirmDate').textContent = new Date(date).toLocaleDateString();
+    document.getElementById('confirmTime').textContent = time;
+    document.getElementById('confirmId').textContent = appointmentId;
+    
+    document.getElementById('appointmentForm').style.display = 'none';
+    document.getElementById('appointmentConfirmation').style.display = 'block';
+
+    // Add to appointments list
+    const appointmentCard = document.createElement('div');
+    appointmentCard.className = 'appointment-card';
+    appointmentCard.innerHTML = `
+        <h4>${document.getElementById('doctor').options[document.getElementById('doctor').selectedIndex].text}</h4>
+        <p><strong>Date:</strong> ${new Date(date).toLocaleDateString()}</p>
+        <p><strong>Time:</strong> ${time}</p>
+        <p><strong>Type:</strong> ${document.getElementById('appointmentType').options[document.getElementById('appointmentType').selectedIndex].text}</p>
+        <p><strong>ID:</strong> ${appointmentId}</p>
+        <p class="status status-pending">Pending Confirmation</p>
+    `;
+    
+    document.getElementById('appointmentsList').prepend(appointmentCard);
+}
+
+// Set minimum date to today
+document.getElementById('appointmentDate').min = new Date().toISOString().split('T')[0];
+</script>
+{% endblock %} 

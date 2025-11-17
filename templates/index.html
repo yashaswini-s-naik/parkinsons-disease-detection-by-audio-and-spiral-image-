@@ -1,0 +1,472 @@
+{% extends "base.html" %}
+
+{% block title %}Parkinson's Disease Detection{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        margin: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        min-height: 100vh;
+    }
+    
+    .main-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 2rem;
+    }
+    
+    .page-title {
+        font-size: 3.5rem;
+        font-weight: 700;
+        color: white;
+        text-align: center;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        letter-spacing: 1px;
+    }
+    
+    .page-subtitle {
+        font-size: 1.2rem;
+        color: rgba(255,255,255,0.9);
+        text-align: center;
+        margin-bottom: 3rem;
+        font-weight: 300;
+    }
+    
+    .options-container {
+        display: flex;
+        gap: 2rem;
+        justify-content: center;
+        align-items: stretch;
+        max-width: 1400px;
+        width: 100%;
+    }
+    
+    .detection-option {
+        background: rgba(255,255,255,0.95);
+        border-radius: 20px;
+        padding: 3rem 3rem;
+        text-align: center;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        flex: 1;
+        max-width: 600px;
+        min-height: 500px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    
+    .detection-option:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+    }
+    
+    .option-icon {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+        display: block;
+    }
+    
+    .audio-icon {
+        color: #4CAF50;
+    }
+    
+    .image-icon {
+        color: #2196F3;
+    }
+    
+    .option-title {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 1rem;
+    }
+    
+    .option-description {
+        font-size: 1.1rem;
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+        flex-grow: 1;
+    }
+    
+    .option-features {
+        list-style: none;
+        padding: 0;
+        margin: 1.5rem 0;
+        text-align: left;
+    }
+    
+    .option-features li {
+        padding: 0.5rem 0;
+        color: #555;
+        font-size: 0.95rem;
+    }
+    
+    .option-features li:before {
+        content: "✓ ";
+        color: #4CAF50;
+        font-weight: bold;
+        margin-right: 0.5rem;
+    }
+    
+    .detect-button {
+        background: linear-gradient(45deg, #4CAF50, #45a049);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        font-size: 1.2rem;
+        font-weight: 600;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        width: 100%;
+        margin-top: 1rem;
+    }
+    
+    .detect-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(76, 175, 80, 0.3);
+    }
+    
+    .image-detect-button {
+        background: linear-gradient(45deg, #2196F3, #1976D2);
+    }
+    
+    .image-detect-button:hover {
+        box-shadow: 0 10px 20px rgba(33, 150, 243, 0.3);
+    }
+    
+    .audio-controls {
+        display: none;
+        margin: 1.5rem 0;
+    }
+    
+    .audio-controls.show {
+        display: block;
+    }
+    
+    .control-button {
+        background: #4CAF50;
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        margin: 0.5rem;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .control-button:hover {
+        background: #45a049;
+        transform: translateY(-2px);
+    }
+    
+    .control-button:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+    }
+    
+    .file-upload-section {
+        display: none;
+        margin-top: 1.5rem;
+    }
+    
+    .file-upload-section.show {
+        display: block;
+    }
+    
+    .file-input {
+        width: 100%;
+        padding: 1rem;
+        margin: 1rem 0;
+        border: 2px dashed #ddd;
+        border-radius: 10px;
+        background: #f9f9f9;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .file-input:hover {
+        border-color: #4CAF50;
+        background: #f0f8f0;
+    }
+    
+    .upload-btn {
+        background: linear-gradient(45deg, #4CAF50, #45a049);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        font-weight: 600;
+        width: 100%;
+        margin-top: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .upload-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+    }
+    
+    .image-upload-btn {
+        background: linear-gradient(45deg, #2196F3, #1976D2);
+    }
+    
+    .image-upload-btn:hover {
+        box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+    }
+    
+    @media (max-width: 1024px) {
+        .options-container {
+            flex-direction: column;
+            gap: 2rem;
+            max-width: 100%;
+        }
+        
+        .detection-option {
+            max-width: 100%;
+            padding: 2.5rem 2rem;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .page-title {
+            font-size: 2.5rem;
+        }
+        
+        .detection-option {
+            padding: 2rem 1.5rem;
+            min-height: auto;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-container">
+    <h1 class="page-title">Parkinson's Disease Detection</h1>
+    <p class="page-subtitle">Choose your preferred detection method to get started</p>
+    
+    <div class="options-container">
+        <!-- Audio Detection Option -->
+        <div class="detection-option" onclick="showAudioOptions()">
+            <div>
+                <span class="option-icon audio-icon">🎤</span>
+                <h2 class="option-title">Detect using Audio</h2>
+                <p class="option-description">
+                    Analyze voice patterns and speech characteristics to detect Parkinson's disease symptoms through audio analysis.
+                </p>
+                <ul class="option-features">
+                    <li>Voice tremor detection</li>
+                    <li>Speech pattern analysis</li>
+                    <li>Real-time recording</li>
+                    <li>Upload existing audio files</li>
+                </ul>
+            </div>
+            <button class="detect-button" onclick="event.stopPropagation(); showAudioOptions()">
+                Start Audio Detection
+            </button>
+            
+            <!-- Audio Controls (Hidden by default) -->
+            <div class="audio-controls" id="audioControls">
+                <div id="controls">
+                    <button class="control-button" id="recordButton">🎤 Record</button>
+                    <button class="control-button" id="pauseButton" disabled>⏸️ Pause</button>
+                    <button class="control-button" id="stopButton" disabled>⏹️ Stop</button>
+                </div>
+                <div id="formats"></div>
+                <div style="text-align: center; margin-top: 1rem;">
+                    <p style="color: #666; margin-bottom: 1rem;">Or upload an existing audio file:</p>
+                    <button class="control-button" onclick="showAudioUpload()" style="background: #2196F3; color: white;">
+                        📁 Upload Audio File
+                    </button>
+                </div>
+                
+                <!-- Audio Upload Section (Hidden by default) -->
+                <div class="file-upload-section" id="audioUploadSection" style="display: none;">
+                    <div class="audio-info" style="background: #f0fff0; border: 2px solid #4CAF50; border-radius: 15px; padding: 1.5rem; margin-bottom: 1.5rem; text-align: left;">
+                        <h3 style="color: #2E7D32; margin-bottom: 1rem; font-size: 1.3rem;">🎤 Voice Test Instructions</h3>
+                        <p style="color: #333; margin-bottom: 1rem; line-height: 1.6;">
+                            <strong>Please follow these voice recording guidelines:</strong>
+                        </p>
+                        <ul style="color: #555; margin-bottom: 1rem; padding-left: 1.5rem;">
+                            <li style="margin-bottom: 0.5rem;">Say <strong>"aaaaahhh"</strong> steadily for <strong>at least 20 seconds</strong></li>
+                            <li style="margin-bottom: 0.5rem;">Hold the sound <strong>smoothly and consistently</strong></li>
+                            <li style="margin-bottom: 0.5rem;">Speak at your <strong>normal volume</strong> - not too loud or soft</li>
+                            <li style="margin-bottom: 0.5rem;">Try to keep the pitch <strong>steady and even</strong></li>
+                            <li style="margin-bottom: 0.5rem;">Record in a <strong>quiet environment</strong> with minimal background noise</li>
+                            <li style="margin-bottom: 0.5rem;">Take a <strong>deep breath</strong> before starting</li>
+                        </ul>
+                        <div style="background: #e8f5e8; padding: 1rem; border-radius: 8px; border-left: 4px solid #4CAF50;">
+                            <p style="margin: 0; color: #2E7D32; font-weight: 500;">
+                                💡 <strong>Tip:</strong> This test analyzes voice tremor and steadiness. The steadier your "aaaaahhh" sound, the better for accurate analysis.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <form action="/upload" method="post" enctype="multipart/form-data">
+                        <input class="file-input" id="audio-file" type="file" name="file" accept="audio/*" title="Select audio file">
+                        <button class="upload-btn" type="submit">📤 Upload Audio File</button>
+                    </form>
+                </div>
+            </div>
+            
+        </div>
+        
+        <!-- Image Detection Option -->
+        <div class="detection-option" onclick="showImageOptions()">
+            <div>
+                <span class="option-icon image-icon">📸</span>
+                <h2 class="option-title">Detect using Image</h2>
+                <p class="option-description">
+                    Analyze handwriting patterns and drawing characteristics to detect Parkinson's disease symptoms through image analysis.
+                </p>
+                <ul class="option-features">
+                    <li>Handwriting analysis</li>
+                    <li>Drawing pattern detection</li>
+                    <li>Motor skill assessment</li>
+                    <li>Upload image files</li>
+                </ul>
+            </div>
+            <button class="detect-button image-detect-button" onclick="event.stopPropagation(); showImageOptions()">
+                Start Image Detection
+            </button>
+            
+            <!-- Image Upload Section (Hidden by default) -->
+            <div class="file-upload-section" id="imageUploadSection">
+                <div class="spiral-info" style="background: #f0f8ff; border: 2px solid #2196F3; border-radius: 15px; padding: 1.5rem; margin-bottom: 1.5rem; text-align: left;">
+                    <h3 style="color: #1976D2; margin-bottom: 1rem; font-size: 1.3rem;">📝 Spiral Drawing Test Instructions</h3>
+                    <p style="color: #333; margin-bottom: 1rem; line-height: 1.6;">
+                        <strong>Please draw a spiral following these guidelines:</strong>
+                    </p>
+                    <ul style="color: #555; margin-bottom: 1rem; padding-left: 1.5rem;">
+                        <li style="margin-bottom: 0.5rem;">Draw <strong>at least 4 complete turns</strong> of the spiral</li>
+                        <li style="margin-bottom: 0.5rem;">Start from the <strong>center</strong> and spiral <strong>outward</strong></li>
+                        <li style="margin-bottom: 0.5rem;">Draw <strong>smoothly and steadily</strong> without shaking</li>
+                        <li style="margin-bottom: 0.5rem;">Keep the lines <strong>neat and consistent</strong></li>
+                        <li style="margin-bottom: 0.5rem;">Use a <strong>dark pen or pencil</strong> on white paper</li>
+                        <li style="margin-bottom: 0.5rem;">Take your time - <strong>no need to rush</strong></li>
+                    </ul>
+                    
+                    <!-- Spiral Example -->
+                    <div style="background: white; border: 1px solid #ddd; border-radius: 10px; padding: 1.5rem; margin: 1rem 0; text-align: center;">
+                        <h4 style="color: #1976D2; margin-bottom: 1rem; font-size: 1.1rem;">📐 Example Spiral (Reference)</h4>
+                        <div style="display: flex; justify-content: center; align-items: center; margin: 1rem 0;">
+                            <img src="{{ url_for('static', filename='img/V01HE03.png') }}" 
+                                 alt="Example spiral drawing" 
+                                 style="max-width: 300px; max-height: 300px; border: 1px solid #e0e0e0; border-radius: 8px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                            <!-- Fallback SVG if image doesn't load -->
+                            <svg width="200" height="200" style="border: 1px solid #e0e0e0; border-radius: 8px; background: white; display: none;">
+                                <!-- Draw a smooth spiral -->
+                                <path d="M100,100 
+                                         A20,20 0 0,1 120,100
+                                         A40,40 0 0,1 100,140
+                                         A60,60 0 0,1 60,100
+                                         A80,80 0 0,1 100,60
+                                         A100,100 0 0,1 140,100
+                                         A120,120 0 0,1 100,180
+                                         A140,140 0 0,1 40,100
+                                         A160,160 0 0,1 100,20
+                                         A180,180 0 0,1 200,100" 
+                                      stroke="#2196F3" 
+                                      stroke-width="3" 
+                                      fill="none" 
+                                      stroke-linecap="round"/>
+                                <!-- Center dot -->
+                                <circle cx="100" cy="100" r="3" fill="#1976D2"/>
+                                <!-- Direction arrows -->
+                                <path d="M100,100 L110,100 M105,95 L110,100 L105,105" stroke="#1976D2" stroke-width="2" fill="none"/>
+                            </svg>
+                        </div>
+                        <p style="color: #666; font-size: 0.9rem; margin: 0;">
+                            <strong>Example of a well-drawn spiral</strong> - Notice the smooth, steady lines and consistent spacing
+                        </p>
+                    </div>
+                    
+                    <div style="background: #e3f2fd; padding: 1rem; border-radius: 8px; border-left: 4px solid #2196F3;">
+                        <p style="margin: 0; color: #1976D2; font-weight: 500;">
+                            💡 <strong>Tip:</strong> This test helps detect motor control issues. Draw as smoothly as possible - the steadiness of your lines is what we're analyzing.
+                        </p>
+                    </div>
+                </div>
+                
+                <form action="/upload_image" method="post" enctype="multipart/form-data">
+                    <input class="file-input" id="image-file" type="file" name="image" accept="image/*" title="Select image file">
+                    <button class="upload-btn image-upload-btn" type="submit">📤 Upload Spiral Image</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
+<script src="/static/js/app.js"></script>
+<script>
+    function showAudioOptions() {
+        // Hide image options
+        document.getElementById('imageUploadSection').classList.remove('show');
+        
+        // Show only audio controls first
+        document.getElementById('audioControls').classList.add('show');
+        document.getElementById('audioUploadSection').classList.remove('show');
+        
+        // Scroll to audio section
+        document.querySelector('.detection-option').scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    function showAudioUpload() {
+        // Show audio upload section
+        const uploadSection = document.getElementById('audioUploadSection');
+        if (uploadSection.style.display === 'none' || uploadSection.style.display === '') {
+            uploadSection.style.display = 'block';
+        } else {
+            uploadSection.style.display = 'none';
+        }
+    }
+    
+    function showImageOptions() {
+        // Hide audio options
+        document.getElementById('audioControls').classList.remove('show');
+        document.getElementById('audioUploadSection').classList.remove('show');
+        
+        // Show image options
+        document.getElementById('imageUploadSection').classList.add('show');
+        
+        // Scroll to image section
+        document.querySelectorAll('.detection-option')[1].scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Add click handlers for better UX
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add hover effects
+        const options = document.querySelectorAll('.detection-option');
+        options.forEach(option => {
+            option.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px)';
+            });
+            
+            option.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    });
+</script>
+{% endblock %}
